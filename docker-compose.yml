@@ -7,6 +7,12 @@ services:
       POSTGRES_DB: "LibraryDb"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "1234"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "LibraryDb"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
     ports:
       - "5432:5432"
     volumes:
@@ -18,7 +24,8 @@ services:
       dockerfile: LibraryApi/Dockerfile
     container_name: library_api
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - DOTNET_ENVIRONMENT=Development
     ports:
