@@ -1,0 +1,37 @@
+services:
+  db:
+    image: "postgres:17"
+    container_name: postgres_container
+    restart: always
+    environment:
+      POSTGRES_DB: "LibraryDb"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "1234"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  webapi:
+    build:
+      context: .
+      dockerfile: LibraryApi/Dockerfile
+    container_name: library_api
+    depends_on:
+      - db
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./LibraryApi/appsettings.Docker.json:/app/appsettings.json
+
+  libraryapi.tests:
+    build:
+      context: .
+      dockerfile: LibraryApi.Tests/Dockerfile
+    depends_on:
+      - webapi
+
+volumes:
+  postgres_data:
