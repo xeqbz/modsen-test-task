@@ -3,6 +3,8 @@ using LibraryApi.Application.Interfaces;
 using LibraryApi.Domain.Entities;
 using LibraryApi.Domain.Interfaces;
 using AutoMapper;
+using LibraryApi.Application.Exceptions;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace LibraryApi.Application.Services
 {
@@ -20,12 +22,16 @@ namespace LibraryApi.Application.Services
         public async Task<IEnumerable<AuthorDTO>> GetAllAuthorsAsync()
         {
             var authors = await _authorRepository.GetAllAsync();
+            if (authors == null)
+                throw new NotFoundException("No authors found");
             return _mapper.Map<IEnumerable<AuthorDTO>>(authors);
         }
 
         public async Task<AuthorDTO?> GetAuthorByIdAsync(int id)
         {
             var author = await _authorRepository.GetByIdAsync(id);
+            if (author == null)
+                throw new NotFoundException("Author not found");
             return author == null ? null : _mapper.Map<AuthorDTO>(author);
         }
 

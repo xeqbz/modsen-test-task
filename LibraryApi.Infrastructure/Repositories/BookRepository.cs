@@ -56,20 +56,13 @@ namespace LibraryApi.Infrastructure.Repositories
         public async Task UpdateImagePathAsync(int id, string imagePath)
         {
             var book = await _dbContext.Books.FindAsync(id);
-            if (book != null)
-            {
-                book.ImagePath = imagePath;
-                await _dbContext.SaveChangesAsync();
-            }
+            book.ImagePath = imagePath;
+            await _dbContext.SaveChangesAsync();
         }
 
         public async Task<bool> IssueBookAsync(int id, DateTimeOffset dueTo)
         {
             var book = await _dbContext.Books.FindAsync(id);
-            if (book == null || book.IssuedAt != null)
-            {
-                return false;
-            }
 
             book.IssuedAt = DateTimeOffset.UtcNow;
             book.DueTo = dueTo;

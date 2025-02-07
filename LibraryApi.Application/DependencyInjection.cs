@@ -14,7 +14,8 @@ namespace LibraryApi.Application
             services.AddScoped<IAuthorService, AuthorService>();
             services.AddScoped<IBookService, BookService>();
             services.AddScoped<IAuthService, AuthService>();
-            services.AddAutoMapper(typeof(MappingProfile));
+            services.AddAutoMapper(typeof(BookProfile));
+            services.AddAutoMapper(typeof(AuthorProfile));
             services.AddHttpClient();
             services.AddValidatorsFromAssembly(typeof(BookValidator).Assembly);
             return services;

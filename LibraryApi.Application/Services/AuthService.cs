@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using LibraryApi.Application.DTOs;
+using LibraryApi.Application.Exceptions;
 using LibraryApi.Application.Interfaces;
 using LibraryApi.Domain.Entities;
 using LibraryApi.Domain.Interfaces;
@@ -26,7 +27,7 @@ namespace LibraryApi.Application.Services
         {
             var exsistingUser = await _userRepository.GetByUsernameAsync(request.UsernameReg);
             if (exsistingUser != null)
-                throw new Exception("User is already exsists");
+                throw new UserAlreadyExistsException("User is already exsists");
 
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.PasswordReg);
 
@@ -45,7 +46,7 @@ namespace LibraryApi.Application.Services
         {
             var user = await _userRepository.GetByUsernameAsync(username);
             if (user == null || !VerifyPassword(password, user.PasswordHash))
-                throw new UnauthorizedAccessException("Invalid username or password");
+                throw new Exceptions.UnauthorizedAccessException("Invalid username or password");
 
             var token = GenerateJwtToken(user);
             user.RefreshToken = GenerateRefreshToken();
@@ -59,7 +60,7 @@ namespace LibraryApi.Application.Services
         {
             var user = await _userRepository.GetByRefreshTokenAsync(refreshToken);
             if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-                throw new UnauthorizedAccessException("Invalid refresh token");
+                throw new Exceptions.UnauthorizedAccessException("Invalid refresh token");
 
             var newToken = GenerateJwtToken(user);
             user.RefreshToken = GenerateRefreshToken();
