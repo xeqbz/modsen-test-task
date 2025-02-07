@@ -1,4 +1,4 @@
-﻿using LibraryApi.Domain;
+﻿using LibraryApi.Domain.Entities;
 using LibraryApi.Infrastructure.Data;
 using LibraryApi.Infrastructure.Repositories;
 using LibraryApi.Tests.Utils;

@@ -1,6 +1,5 @@
 ﻿using System.Text;
-using LibraryApi.API;
-using LibraryApi.API.Middleware;
+using LibraryApi.Middleware;
 using LibraryApi.Application;
 using LibraryApi.Infrastructure;
 using LibraryApi.Infrastructure.Data;
@@ -8,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using LibraryApi;
 
 var builder = WebApplication.CreateBuilder(args);
 

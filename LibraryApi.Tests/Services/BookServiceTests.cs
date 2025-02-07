@@ -1,12 +1,11 @@
 ﻿using AutoMapper;
 using LibraryApi.Application.DTOs;
-using LibraryApi.Application.Interfaces;
 using LibraryApi.Application.Services;
-using LibraryApi.Domain;
-using LibraryApi.Infrastructure.Repositories;
+using LibraryApi.Domain.Entities;
+using LibraryApi.Domain.Interfaces;
 using LibraryApi.Tests.Utils;
+using LibraryApi.Domain.Common;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Moq;
 
 namespace LibraryApi.Tests.Services

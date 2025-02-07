@@ -29,4 +29,9 @@
     <PackageReference Include="xunit" Version="2.9.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LibraryApi.Application\LibraryApi.Application.csproj" />
+    <ProjectReference Include="..\LibraryApi.Infrastructure\LibraryApi.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
