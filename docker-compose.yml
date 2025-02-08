@@ -17,6 +17,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - library_network
 
   webapi:
     build:
@@ -28,17 +30,26 @@ services:
         condition: service_healthy
     environment:
       - DOTNET_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=db;Database=LibraryDb;Username=postgres;Password=1234
     ports:
       - "8080:8080"
     volumes:
       - ./LibraryApi/appsettings.Docker.json:/app/appsettings.json
+    networks:
+      - library_network
 
   libraryapi.tests:
     build:
       context: .
       dockerfile: LibraryApi.Tests/Dockerfile
     depends_on:
-      - webapi
+      webapi:
+        condition: service_started
+    networks:
+      - library_network
+
+networks:
+  library_network:
 
 volumes:
   postgres_data:

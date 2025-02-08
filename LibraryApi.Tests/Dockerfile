@@ -8,4 +8,4 @@ COPY . .
 WORKDIR "/src/LibraryApi.Tests"
 RUN dotnet build "LibraryApi.Tests.csproj" -c Release -o /app/build
 
-ENTRYPOINT ["dotnet", "test", "--logger:trx"]
+CMD ["sh", "-c", "sleep 10 && dotnet test --logger:trx"]

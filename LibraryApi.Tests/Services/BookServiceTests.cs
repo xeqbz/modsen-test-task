@@ -7,6 +7,7 @@ using LibraryApi.Tests.Utils;
 using LibraryApi.Domain.Common;
 using Microsoft.AspNetCore.Hosting;
 using Moq;
+using LibraryApi.Application.Exceptions;
 
 namespace LibraryApi.Tests.Services
 {
@@ -120,10 +121,13 @@ namespace LibraryApi.Tests.Services
         [Fact]
         public async Task UploadBookImageByUrlAsync_Should_Return_True_When_Successful()
         {
+            // Arrange
             int bookId = 1;
             string imageUrl = "https://example.com/book.jpg";
             string expectedSavedPath = $"/uploads/{bookId}_";
+            var book = new Book { Id = bookId, Title = "Test Book" };
 
+            _mockRepo.Setup(repo => repo.GetByIdAsync(bookId)).ReturnsAsync(book); // ✅ Книга найдена
             _mockRepo.Setup(repo => repo.UpdateImagePathAsync(It.IsAny<int>(), It.Is<string>(s => s.StartsWith(expectedSavedPath))))
                      .Returns(Task.CompletedTask);
 
@@ -132,12 +136,16 @@ namespace LibraryApi.Tests.Services
 
             // Assert
             Assert.True(result);
-            _mockRepo.Verify(repo => repo.UpdateImagePathAsync(It.IsAny<int>(), It.IsAny<string>()), Times.Once);
+            _mockRepo.Verify(repo => repo.UpdateImagePathAsync(bookId, It.IsAny<string>()), Times.Once);
         }
+
 
         [Fact]
         public async Task IssueBookAsync_Should_Return_True_When_Successful()
         {
+            var book = new Book { Id = 1, Title = "Test Book", IssuedAt = null };
+
+            _mockRepo.Setup(repo => repo.GetByIdAsync(It.IsAny<int>())).ReturnsAsync(book);
             _mockRepo.Setup(repo => repo.IssueBookAsync(It.IsAny<int>(), It.IsAny<DateTimeOffset>()))
                      .ReturnsAsync(true);
 
@@ -181,9 +189,7 @@ namespace LibraryApi.Tests.Services
         {
             _mockRepo.Setup(repo => repo.GetByIdAsync(It.IsAny<int>())).ReturnsAsync((Book)null);
 
-            var result = await _bookService.GetBookByIdAsync(1);
-
-            Assert.Null(result);
+            await Assert.ThrowsAsync<NotFoundException>(() => _bookService.GetBookByIdAsync(1));
         }
 
         [Fact]
