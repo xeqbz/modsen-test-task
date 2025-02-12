@@ -19,15 +19,13 @@ namespace LibraryApi.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAuthors()
         {
-            var authors = await _authorService.GetAllAuthorsAsync();
-            return Ok(authors);
+            return Ok(await _authorService.GetAllAuthorsAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAuthor(int id)
         {
-            var author = await _authorService.GetAuthorByIdAsync(id);
-            return author != null ? Ok(author) : NotFound();
+            return Ok(await _authorService.GetAuthorByIdAsync(id);
         }
 
         [HttpPost]
@@ -42,16 +40,15 @@ namespace LibraryApi.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateAuthor(int id, [FromBody] AuthorDTO dto)
         {
-            var updated = await _authorService.UpdateAuthorAsync(id, dto);
-            return updated ? NoContent() : NotFound();
+            await _authorService.UpdateAuthorAsync(id, dto);
+            return Ok("Author updated");
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteAuthor(int id)
         {
-            var deleted = await _authorService.DeleteAuthorAsync(id);
-            return deleted ? NoContent() : NotFound();
-        }
+            await _authorService.DeleteAuthorAsync(id);
+            return Ok("Author deleted");
     }
 }

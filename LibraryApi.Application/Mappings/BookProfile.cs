@@ -1,6 +1,7 @@
 ﻿using LibraryApi.Domain.Entities;
 using AutoMapper;
 using LibraryApi.Application.DTOs;
+using LibraryApi.Application.Requests;
 
 namespace LibraryApi.Application.Mappings
 {
@@ -10,7 +11,7 @@ namespace LibraryApi.Application.Mappings
         {
             CreateMap<Book, BookDTO>()
                 .ForMember(dest => dest.AuthorName, opt => opt.MapFrom(src => src.Author.FirstName + " " + src.Author.LastName));
-            CreateMap<CreateBookDTO, Book>();
+            CreateMap<CreateBookRequest, Book>();
         }
     }
 }

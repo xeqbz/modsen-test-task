@@ -1,5 +1,5 @@
-﻿using LibraryApi.Application.DTOs;
-using LibraryApi.Application.Interfaces;
+﻿using LibraryApi.Application.Interfaces;
+using LibraryApi.Application.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryApi.Controllers
@@ -19,12 +19,12 @@ namespace LibraryApi.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            var result = await _authService.RegisterAsync(request);
-            return result ? Ok("Registration success") : BadRequest("Registration error");
+            await _authService.RegisterAsync(request);
+            return Ok("Registration success");
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] Application.DTOs.LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             var token = await _authService.AuthenticateAsync(request.Username, request.Password);
             return Ok(new { accessToken = token });

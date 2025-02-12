@@ -1,9 +1,9 @@
-﻿using LibraryApi.Application.DTOs;
-using LibraryApi.Application.Interfaces;
+﻿using LibraryApi.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using LibraryApi.Domain.Common;
+using LibraryApi.Application.Requests;
 
 namespace LibraryApi.Controllers
 {
@@ -20,27 +20,24 @@ namespace LibraryApi.Controllers
         [HttpGet]
         public async Task<ActionResult> GetBooks()
         {
-            var books = await _bookService.GetAllBooksAsync();
-            return Ok(books);
+            return Ok(await _bookService.GetAllBooksAsync());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult> GetBook(int id)
         {
-            var book = await _bookService.GetBookByIdAsync(id);
-            return book != null ? Ok(book) : NotFound();
+            return Ok(await _bookService.GetBookByIdAsync(id));
         }
 
         [HttpGet("isbn/{isbn}")]
         public async Task<ActionResult> GetBookByISBN(string isbn)
         {
-            var book = await _bookService.GetBookByISBNAsync(isbn);
-            return book != null ? Ok(book) : NotFound();
+            return Ok(await _bookService.GetBookByISBNAsync(isbn));
         }
 
         [HttpPost]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> CreateBook([FromBody] CreateBookDTO dto)
+        public async Task<ActionResult> CreateBook([FromBody] CreateBookRequest dto)
         {
             var book = await _bookService.CreateBookAsync(dto);
             return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
@@ -48,68 +45,48 @@ namespace LibraryApi.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> UpdateBook(int id, [FromBody] CreateBookDTO dto)
+        public async Task<ActionResult> UpdateBook(int id, [FromBody] CreateBookRequest dto)
         {
-            var updated = await _bookService.UpdateBookAsync(id, dto);
-            return updated ? NoContent() : NotFound();
+            await _bookService.UpdateBookAsync(id, dto);
+            return Ok("Book updated");
         }
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteBook(int id)
         {
-            var deleted = await _bookService.DeleteBookAsync(id);
-            return deleted ? NoContent() : NotFound();
+            await _bookService.DeleteBookAsync(id);
+            return Ok("Book deleted");
         }
 
         [HttpGet("author/{authorId}")]
         public async Task<ActionResult> GetBooksByAuthor(int authorId)
         {
-            var books = await _bookService.GetBooksByAuthorAsync(authorId);
-            return books.Any() ? Ok(books) : NotFound();
+            return Ok(await _bookService.GetBooksByAuthorAsync(authorId));
         }
 
         [HttpPost("{id}/uploadImage")]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UploadBookImage(int id, [FromBody] string url)
         {
-            var result = await _bookService.UploadBookImageAsync(id, url);
-            return result ? Ok("File uploaded") : BadRequest("Error while uploading file");
+            await _bookService.UploadBookImageAsync(id, url);
+            return Ok("File uploaded");
         }
 
         [HttpGet("{id}/image")]
-        public async Task<ActionResult> GetBookImage(int id, [FromServices] IMemoryCache cache)
+        public async Task<IActionResult> GetBookImage(int id, [FromServices] IMemoryCache cache)
         {
-            var book = await _bookService.GetBookByIdAsync(id);
-            if (book == null || string.IsNullOrEmpty(book.ImagePath))
-                return NotFound("Image not found");
-
-            string cacheKey = $"book_image_{id}";
-
-            if (!cache.TryGetValue(cacheKey, out byte[] imageBytes))
-            {
-                var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", book.ImagePath.TrimStart('/'));
-
-                if (!System.IO.File.Exists(imagePath))
-                    return NotFound("Image file missing");
-
-                imageBytes = await System.IO.File.ReadAllBytesAsync(imagePath);
-
-                var cacheOptions = new MemoryCacheEntryOptions()
-                    .SetAbsoluteExpiration(TimeSpan.FromMinutes(10));
-
-                cache.Set(cacheKey, imageBytes, cacheOptions);
-            }
-
-            return File(imageBytes, "image/jpeg", $"{book.ImagePath}");
+            var (imageBytes, fileName) = await _bookService.GetBookImageAsync(id, cache);
+            return File(imageBytes, "image/jpeg", fileName);
         }
+
 
         [HttpPost("{id}/issue")]
         [Authorize]
         public async Task<ActionResult> IssueBook(int id, [FromBody] DateTimeOffset dueDate)
         {
-            var result = await _bookService.IssueBookAsync(id, dueDate);
-            return result ? Ok("Book issued") : BadRequest("Error while issuing book");
+            await _bookService.IssueBookAsync(id, dueDate);
+            return Ok("Book issued");
         }
 
         [HttpGet("paged")]

@@ -2,9 +2,9 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using LibraryApi.Application.DTOs;
 using LibraryApi.Application.Exceptions;
 using LibraryApi.Application.Interfaces;
+using LibraryApi.Application.Requests;
 using LibraryApi.Domain.Entities;
 using LibraryApi.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -25,9 +25,8 @@ namespace LibraryApi.Application.Services
 
         public async Task<bool> RegisterAsync(RegisterRequest request)
         {
-            var exsistingUser = await _userRepository.GetByUsernameAsync(request.UsernameReg);
-            if (exsistingUser != null)
-                throw new UserAlreadyExistsException("User is already exsists");
+            var exsistingUser = await _userRepository.GetByUsernameAsync(request.UsernameReg)
+                ?? throw new UserAlreadyExistsException("User is already exsists");
 
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.PasswordReg);
 

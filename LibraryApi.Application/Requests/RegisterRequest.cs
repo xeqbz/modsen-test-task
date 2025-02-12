@@ -1,4 +1,4 @@
-﻿namespace LibraryApi.Application.DTOs
+﻿namespace LibraryApi.Application.Requests
 {
     public class RegisterRequest
     {

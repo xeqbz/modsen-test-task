@@ -1,9 +1,9 @@
 ﻿using FluentValidation;
-using LibraryApi.Application.DTOs;
+using LibraryApi.Application.Requests;
 
 namespace LibraryApi.Application.Validators
 {
-    public class BookValidator : AbstractValidator<CreateBookDTO>
+    public class BookValidator : AbstractValidator<CreateBookRequest>
     {
         public BookValidator()
         {

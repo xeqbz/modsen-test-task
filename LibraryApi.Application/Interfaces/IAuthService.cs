@@ -1,4 +1,4 @@
-﻿using LibraryApi.Application.DTOs;
+﻿using LibraryApi.Application.Requests;
 
 namespace LibraryApi.Application.Interfaces
 {

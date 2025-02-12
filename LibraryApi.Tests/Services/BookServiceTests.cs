@@ -8,6 +8,7 @@ using LibraryApi.Domain.Common;
 using Microsoft.AspNetCore.Hosting;
 using Moq;
 using LibraryApi.Application.Exceptions;
+using LibraryApi.Application.Requests;
 
 namespace LibraryApi.Tests.Services
 {
@@ -29,7 +30,7 @@ namespace LibraryApi.Tests.Services
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<Book, BookDTO>();
-                cfg.CreateMap<CreateBookDTO, Book>();
+                cfg.CreateMap<CreateBookRequest, Book>();
             });
             _mapper = config.CreateMapper();
 
@@ -59,7 +60,7 @@ namespace LibraryApi.Tests.Services
         [Fact]
         public async Task CreateBookAsync_Should_Create_Book()
         {
-            var newBookDTO = new CreateBookDTO { Title = "Test", ISBN = "1234567890" };
+            var newBookDTO = new CreateBookRequest { Title = "Test", ISBN = "1234567890" };
             var newBook = new Book { Id = 1, Title = "Test", ISBN = "1234567890" };
 
             _mockRepo.Setup(repo => repo.AddAsync(It.IsAny<Book>())).Returns(Task.CompletedTask);
@@ -74,7 +75,7 @@ namespace LibraryApi.Tests.Services
         public async Task UpdateBookAsync_Should_Return_True_If_Successful()
         {
             var book = new Book { Id = 1, Title = "Old", ISBN = "1111111111" };
-            var updatedDto = new CreateBookDTO { Title = "New", ISBN = "1111111111" };
+            var updatedDto = new CreateBookRequest { Title = "New", ISBN = "1111111111" };
 
             _mockRepo.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(book);
             _mockRepo.Setup(repo => repo.UpdateAsync(It.IsAny<Book>())).Returns(Task.CompletedTask);
@@ -90,7 +91,7 @@ namespace LibraryApi.Tests.Services
         {
             _mockRepo.Setup(repo => repo.GetByIdAsync(It.IsAny<int>())).ReturnsAsync((Book)null);
 
-            var result = await _bookService.UpdateBookAsync(1, new CreateBookDTO { Title = "New" });
+            var result = await _bookService.UpdateBookAsync(1, new CreateBookRequest { Title = "New" });
 
             Assert.False(result);
         }

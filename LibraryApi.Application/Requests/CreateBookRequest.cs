@@ -1,6 +1,6 @@
-﻿namespace LibraryApi.Application.DTOs
+﻿namespace LibraryApi.Application.Requests
 {
-    public class CreateBookDTO
+    public class CreateBookRequest
     {
         public string ISBN { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;

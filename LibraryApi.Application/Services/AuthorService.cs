@@ -4,7 +4,6 @@ using LibraryApi.Domain.Entities;
 using LibraryApi.Domain.Interfaces;
 using AutoMapper;
 using LibraryApi.Application.Exceptions;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace LibraryApi.Application.Services
 {
@@ -21,18 +20,16 @@ namespace LibraryApi.Application.Services
 
         public async Task<IEnumerable<AuthorDTO>> GetAllAuthorsAsync()
         {
-            var authors = await _authorRepository.GetAllAsync();
-            if (authors == null)
-                throw new NotFoundException("No authors found");
+            var authors = await _authorRepository.GetAllAsync()
+                ?? throw new NotFoundException("No authors found");
             return _mapper.Map<IEnumerable<AuthorDTO>>(authors);
         }
 
         public async Task<AuthorDTO?> GetAuthorByIdAsync(int id)
         {
-            var author = await _authorRepository.GetByIdAsync(id);
-            if (author == null)
-                throw new NotFoundException("Author not found");
-            return author == null ? null : _mapper.Map<AuthorDTO>(author);
+            var author = await _authorRepository.GetByIdAsync(id)
+                ?? throw new NotFoundException("Author not found");
+            return _mapper.Map<AuthorDTO>(author);
         }
 
         public async Task<AuthorDTO> CreateAuthorAsync(AuthorDTO dto)
@@ -44,11 +41,8 @@ namespace LibraryApi.Application.Services
 
         public async Task<bool> UpdateAuthorAsync(int id, AuthorDTO dto)
         {
-            var author = await _authorRepository.GetByIdAsync(id);
-            if (author == null)
-            {
-                return false;
-            }
+            var author = await _authorRepository.GetByIdAsync(id)
+                ?? throw new NotFoundException("Author not found");
             _mapper.Map(dto, author);
             await _authorRepository.UpdateAsync(author);
             return true;
@@ -56,11 +50,8 @@ namespace LibraryApi.Application.Services
 
         public async Task<bool> DeleteAuthorAsync(int id)
         {
-            var author = await _authorRepository.GetByIdAsync(id);
-            if (author == null)
-            {
-                return false;
-            }
+            var author = await _authorRepository.GetByIdAsync(id)
+                ?? throw new NotFoundException("Author not found");
             await _authorRepository.DeleteAsync(author);
             return true;
         }
